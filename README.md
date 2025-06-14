@@ -1,1 +1,65 @@
-# asep2.2
+Market Intelligence Platform
+File structure:
+-client
+  -public
+    -index.html
+  -src
+    -components
+      -Common.js
+      -Competitors.js
+      -Dashboard.js
+      -ForecastChart.js
+      -ForecastMethodInfo.js
+      -Navbar.js
+      -Sidebar.js
+      -SimulationChart.js
+    -pages
+      -CompetitorAnalysis.js
+      -Dashboard.js
+      -MarketForecasting.js
+      -Settings.js
+      -Simulation.js
+    -styles
+      -global.js
+      -main.scss
+      -theme.js
+    -utils
+      -chartSetup.js
+    -App.js
+    -index.js
+-ml models
+  -forecasting
+    -lstmModel.js
+-scraper
+  -competitors
+    -basicScraper.js
+-server
+  -app.js
+  -server.js
+  -config
+    -config.js
+  -middleware
+    -validation.js
+  -models
+    -Competitor.js
+    -PriceHistory.js
+    -SentimentFeedback.js
+  -routes
+    -competitors.js
+    -forecasts.js
+    -sentiments.js
+    -simulations.js
+  -services
+    -competitorService.js
+    -forecastService.js
+    -sentimentService.js
+    -simulationService.js
+  -utils
+    -competitorResponse.js
+    -demandCalculator.js
+    -emojiAnalyzer.js
+    -keywordAnalyzer.js
+    -scraperWorker.js
+    -scraping.js
+    -simpleForecaster.js
+    
