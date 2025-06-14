@@ -1,5 +1,6 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
+import '../utils/chartSetup'; // Ensure chart elements are registered
 
 const ForecastChart = ({ historicalData, forecastData }) => {
   const labels = [
@@ -32,11 +33,11 @@ const ForecastChart = ({ historicalData, forecastData }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'top'
       },
       tooltip: {
         mode: 'index',
-        intersect: false,
+        intersect: false
       }
     },
     scales: {
@@ -46,7 +47,7 @@ const ForecastChart = ({ historicalData, forecastData }) => {
     }
   };
 
-  return <Line data={data} options={options} />;
+  return <Line key="forecast-chart" data={data} options={options} />;
 };
 
 export default ForecastChart;

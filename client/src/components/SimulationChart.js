@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
+import '../utils/chartSetup'; // Chart.js setup
 import { Card } from './Common';
 import styled from 'styled-components';
 
@@ -19,10 +20,10 @@ const ChartTab = styled.button`
   padding: 8px 16px;
   background: none;
   border: none;
-  border-bottom: 2px solid ${({ active, theme }) => active ? theme.primary : 'transparent'};
-  color: ${({ active, theme }) => active ? theme.primary : '#666'};
+  border-bottom: 2px solid ${({ active, theme }) => (active ? theme.primary : 'transparent')};
+  color: ${({ active, theme }) => (active ? theme.primary : '#666')};
   cursor: pointer;
-  font-weight: ${({ active }) => active ? '600' : '400'};
+  font-weight: ${({ active }) => (active ? '600' : '400')};
   transition: all 0.2s;
 
   &:hover {
@@ -61,22 +62,21 @@ const SummaryItem = styled.div`
 
 const SimulationChart = ({ data }) => {
   const [activeTab, setActiveTab] = useState('prices');
-  
-  // Prepare chart data based on simulation results
+
   const chartData = {
     prices: {
-      labels: data.weeks.map(week => `Week ${week.week}`),
+      labels: data.weeks.map((week) => `Week ${week.week}`),
       datasets: [
         {
           label: 'Your Price',
-          data: data.weeks.map(week => week.yourPrice),
+          data: data.weeks.map((week) => week.yourPrice),
           borderColor: '#4a6fa5',
           backgroundColor: 'rgba(74, 111, 165, 0.1)',
           tension: 0.3
         },
         ...data.weeks[0].competitors.map((comp, i) => ({
           label: comp.name,
-          data: data.weeks.map(week => week.competitors[i].price),
+          data: data.weeks.map((week) => week.competitors[i].price),
           borderColor: ['#6b8cae', '#ff6b6b', '#88c999', '#f4a261'][i % 4],
           backgroundColor: 'transparent',
           tension: 0.3,
@@ -85,11 +85,11 @@ const SimulationChart = ({ data }) => {
       ]
     },
     marketShare: {
-      labels: data.weeks.map(week => `Week ${week.week}`),
+      labels: data.weeks.map((week) => `Week ${week.week}`),
       datasets: [
         {
           label: 'Market Share',
-          data: data.weeks.map(week => week.marketShare),
+          data: data.weeks.map((week) => week.marketShare),
           backgroundColor: 'rgba(74, 111, 165, 0.6)',
           borderColor: '#4a6fa5',
           borderWidth: 1
@@ -97,11 +97,11 @@ const SimulationChart = ({ data }) => {
       ]
     },
     profit: {
-      labels: data.weeks.map(week => `Week ${week.week}`),
+      labels: data.weeks.map((week) => `Week ${week.week}`),
       datasets: [
         {
           label: 'Profit',
-          data: data.weeks.map(week => week.profit),
+          data: data.weeks.map((week) => week.profit),
           backgroundColor: 'rgba(40, 167, 69, 0.6)',
           borderColor: '#28a745',
           borderWidth: 1
@@ -114,24 +114,21 @@ const SimulationChart = ({ data }) => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top',
-      },
+      legend: { position: 'top' },
       tooltip: {
         callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += activeTab === 'prices' 
-                ? `$${context.parsed.y.toFixed(2)}` 
+          label: (context) => {
+            const value = context.parsed.y;
+            const label = context.dataset.label || '';
+            if (value === null) return label;
+
+            return `${label}: ${
+              activeTab === 'prices'
+                ? `$${value.toFixed(2)}`
                 : activeTab === 'marketShare'
-                ? `${context.parsed.y.toFixed(1)}%`
-                : `$${context.parsed.y.toLocaleString()}`;
-            }
-            return label;
+                ? `${value.toFixed(1)}%`
+                : `$${value.toLocaleString()}`
+            }`;
           }
         }
       }
@@ -140,9 +137,9 @@ const SimulationChart = ({ data }) => {
       y: {
         beginAtZero: activeTab !== 'prices',
         ticks: {
-          callback: function(value) {
-            return activeTab === 'prices' 
-              ? `$${value}` 
+          callback: (value) => {
+            return activeTab === 'prices'
+              ? `$${value}`
               : activeTab === 'marketShare'
               ? `${value}%`
               : `$${value.toLocaleString()}`;
@@ -154,64 +151,49 @@ const SimulationChart = ({ data }) => {
 
   return (
     <Card>
-      <h3>{data.scenario === 'price-war' ? 'Price War Simulation' : 
-           data.scenario === 'new-product' ? 'New Product Launch' : 
-           'Promotion Impact'} Results</h3>
-      
+      <h3>
+        {data.scenario === 'price-war'
+          ? 'Price War Simulation'
+          : data.scenario === 'new-product'
+          ? 'New Product Launch'
+          : 'Promotion Impact'}{' '}
+        Results
+      </h3>
+
       <ChartTabs>
-        <ChartTab 
-          active={activeTab === 'prices'} 
-          onClick={() => setActiveTab('prices')}
-        >
+        <ChartTab active={activeTab === 'prices'} onClick={() => setActiveTab('prices')}>
           Prices
         </ChartTab>
-        <ChartTab 
-          active={activeTab === 'marketShare'} 
-          onClick={() => setActiveTab('marketShare')}
-        >
+        <ChartTab active={activeTab === 'marketShare'} onClick={() => setActiveTab('marketShare')}>
           Market Share
         </ChartTab>
-        <ChartTab 
-          active={activeTab === 'profit'} 
-          onClick={() => setActiveTab('profit')}
-        >
+        <ChartTab active={activeTab === 'profit'} onClick={() => setActiveTab('profit')}>
           Profit
         </ChartTab>
       </ChartTabs>
-      
+
       <ChartContainer>
-        {activeTab === 'prices' && (
-          <Line 
-            data={chartData.prices} 
-            options={chartOptions} 
-          />
-        )}
-        {activeTab === 'marketShare' && (
-          <Bar 
-            data={chartData.marketShare} 
-            options={chartOptions} 
-          />
-        )}
+        {activeTab === 'prices' && <Line key="prices" data={chartData.prices} options={chartOptions} />}
+        {activeTab === 'marketShare' && <Bar key="marketShare" data={chartData.marketShare} options={chartOptions} />}
         {activeTab === 'profit' && (
-          <Bar 
-            data={chartData.profit} 
+          <Bar
+            key="profit"
+            data={chartData.profit}
             options={{
               ...chartOptions,
               scales: {
                 y: {
                   beginAtZero: false,
                   ticks: {
-                    callback: function(value) {
-                      return `$${value.toLocaleString()}`;
-                    }
+                    callback: (value) => `$${value.toLocaleString()}`
                   }
                 }
               }
-            }} 
+            }}
           />
         )}
       </ChartContainer>
-      
+
       <SummaryCard>
         <SummaryItem>
           <h4>Final Market Share</h4>

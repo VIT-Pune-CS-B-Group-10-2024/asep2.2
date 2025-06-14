@@ -1,12 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Card, ChartContainer } from '../components/Common';
-import {
-  LineChart,
-  BarChart,
-  PieChart,
-  SummaryCards
-} from '../components/Dashboard';
+import { LineChart, BarChart, PieChart, SummaryCards } from '../components/Dashboard';
 
 const DashboardContainer = styled.div`
   display: grid;
@@ -25,7 +20,7 @@ const SectionTitle = styled.h2`
 `;
 
 function Dashboard() {
-  // Sample data - replace with real data from your API
+  // Sample data - replace with your API data as needed
   const marketTrendsData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [
@@ -44,12 +39,7 @@ function Dashboard() {
       {
         label: 'Market Share',
         data: [35, 25, 20, 20],
-        backgroundColor: [
-          '#4a6fa5',
-          '#6b8cae',
-          '#ff6b6b',
-          '#88c999',
-        ],
+        backgroundColor: ['#4a6fa5', '#6b8cae', '#ff6b6b', '#88c999'],
       },
     ],
   };
@@ -59,11 +49,7 @@ function Dashboard() {
     datasets: [
       {
         data: [65, 25, 10],
-        backgroundColor: [
-          '#88c999',
-          '#6b8cae',
-          '#ff6b6b',
-        ],
+        backgroundColor: ['#88c999', '#6b8cae', '#ff6b6b'],
       },
     ],
   };
@@ -90,11 +76,13 @@ function Dashboard() {
               <LineChart data={marketTrendsData} />
             </ChartContainer>
           </Card>
+
           <Card>
             <ChartContainer>
               <BarChart data={competitorData} />
             </ChartContainer>
           </Card>
+
           <Card>
             <ChartContainer>
               <PieChart data={sentimentData} />
@@ -105,7 +93,7 @@ function Dashboard() {
 
       <Section>
         <SectionTitle>Recent Alerts</SectionTitle>
-        {/* Alert components would go here */}
+        {/* Add alert components or content here */}
       </Section>
     </div>
   );

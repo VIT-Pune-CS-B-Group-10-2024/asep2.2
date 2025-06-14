@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   FiHome,
   FiTrendingUp,
@@ -9,6 +9,7 @@ import {
   FiSettings
 } from 'react-icons/fi';
 
+// Transient prop $sidebarOpen prevents React DOM warnings
 const SidebarContainer = styled.div`
   background: ${({ theme }) => theme.sidebarBg};
   color: ${({ theme }) => theme.sidebarText};
@@ -16,7 +17,7 @@ const SidebarContainer = styled.div`
   height: 100vh;
   position: fixed;
   top: 0;
-  left: ${({ sidebarOpen }) => (sidebarOpen ? '0' : '-250px')};
+  left: ${({ $sidebarOpen }) => ($sidebarOpen ? '0' : '-250px')};
   transition: left 0.3s ease;
   z-index: 100;
   padding-top: 70px;
@@ -46,31 +47,38 @@ const MenuLink = styled(Link)`
 `;
 
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    setSidebarOpen(false); // Close sidebar on route change
+  }, [location.pathname, setSidebarOpen]);
+
   return (
-    <SidebarContainer sidebarOpen={sidebarOpen}>
+    // Pass $sidebarOpen instead of sidebarOpen here!
+    <SidebarContainer $sidebarOpen={sidebarOpen}>
       <SidebarMenu>
         <MenuItem>
-          <MenuLink to="/" onClick={() => setSidebarOpen(false)}>
+          <MenuLink to="/">
             <FiHome /> Dashboard
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink to="/competitors" onClick={() => setSidebarOpen(false)}>
+          <MenuLink to="/competitors">
             <FiDollarSign /> Competitor Analysis
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink to="/forecasting" onClick={() => setSidebarOpen(false)}>
+          <MenuLink to="/forecasting">
             <FiTrendingUp /> Market Forecasting
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink to="/simulation" onClick={() => setSidebarOpen(false)}>
+          <MenuLink to="/simulation">
             <FiBarChart2 /> Simulation
           </MenuLink>
         </MenuItem>
         <MenuItem>
-          <MenuLink to="/settings" onClick={() => setSidebarOpen(false)}>
+          <MenuLink to="/settings">
             <FiSettings /> Settings
           </MenuLink>
         </MenuItem>

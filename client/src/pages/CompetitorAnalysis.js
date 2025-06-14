@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Card, ChartContainer, Table } from '../components/Common';
+import { Card, ChartContainer } from '../components/Common';
 import { CompetitorPriceChart, CompetitorTable } from '../components/Competitors';
 
 const PageContainer = styled.div`
@@ -27,17 +27,23 @@ const FilterContainer = styled.div`
 
 const FilterButton = styled.button`
   padding: 0.5rem 1rem;
-  background: ${({ active, theme }) => active ? theme.primary : theme.cardBg};
-  color: ${({ active, theme }) => active ? 'white' : theme.text};
+  background: ${({ active, theme }) => (active ? theme.primary : theme.cardBg)};
+  color: ${({ active, theme }) => (active ? 'white' : theme.text)};
   border: 1px solid ${({ theme }) => theme.primary};
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: ${({ active, theme }) => active ? theme.primary : theme.secondary};
+    background: ${({ active, theme }) => (active ? theme.primary : theme.secondary)};
     color: white;
   }
+`;
+
+const LoadingMessage = styled.div`
+  padding: 1rem;
+  color: ${({ theme }) => theme.textSecondary || '#666'};
+  font-style: italic;
 `;
 
 function CompetitorAnalysis() {
@@ -45,7 +51,6 @@ function CompetitorAnalysis() {
   const [competitors, setCompetitors] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Sample data - replace with real data from your API
   useEffect(() => {
     // Simulate API call
     setTimeout(() => {
@@ -95,6 +100,20 @@ function CompetitorAnalysis() {
     }, 1000);
   }, []);
 
+  // Filter competitors based on active filter
+  const filteredCompetitors = React.useMemo(() => {
+    if (activeFilter === 'price') {
+      // Show only competitors with non-zero price change
+      return competitors.filter(c => c.priceChange !== 0);
+    }
+    if (activeFilter === 'sentiment') {
+      // Could filter or sort by sentiment — here just returning all for simplicity
+      return competitors;
+    }
+    // Default: all competitors
+    return competitors;
+  }, [activeFilter, competitors]);
+
   const priceHistoryData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
     datasets: [
@@ -126,47 +145,49 @@ function CompetitorAnalysis() {
   };
 
   return (
-    <PageContainer>
-      <Section>
-        <SectionTitle>Competitor Price Trends</SectionTitle>
-        <Card>
-          <ChartContainer>
-            <CompetitorPriceChart data={priceHistoryData} />
-          </ChartContainer>
-        </Card>
-      </Section>
+    <>
+      <PageContainer>
+        <Section>
+          <SectionTitle>Competitor Price Trends</SectionTitle>
+          <Card>
+            <ChartContainer>
+              <CompetitorPriceChart data={priceHistoryData} />
+            </ChartContainer>
+          </Card>
+        </Section>
 
-      <Section>
-        <SectionTitle>Competitor Analysis</SectionTitle>
-        <FilterContainer>
-          <FilterButton 
-            active={activeFilter === 'all'} 
-            onClick={() => setActiveFilter('all')}
-          >
-            All Competitors
-          </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'price'} 
-            onClick={() => setActiveFilter('price')}
-          >
-            Price Changes
-          </FilterButton>
-          <FilterButton 
-            active={activeFilter === 'sentiment'} 
-            onClick={() => setActiveFilter('sentiment')}
-          >
-            Sentiment
-          </FilterButton>
-        </FilterContainer>
-        <Card>
-          {loading ? (
-            <div>Loading competitor data...</div>
-          ) : (
-            <CompetitorTable data={competitors} />
-          )}
-        </Card>
-      </Section>
-    </PageContainer>
+        <Section>
+          <SectionTitle>Competitor Analysis</SectionTitle>
+          <FilterContainer>
+            <FilterButton
+              active={activeFilter === 'all'}
+              onClick={() => setActiveFilter('all')}
+            >
+              All Competitors
+            </FilterButton>
+            <FilterButton
+              active={activeFilter === 'price'}
+              onClick={() => setActiveFilter('price')}
+            >
+              Price Changes
+            </FilterButton>
+            <FilterButton
+              active={activeFilter === 'sentiment'}
+              onClick={() => setActiveFilter('sentiment')}
+            >
+              Sentiment
+            </FilterButton>
+          </FilterContainer>
+          <Card>
+            {loading ? (
+              <LoadingMessage>Loading competitor data...</LoadingMessage>
+            ) : (
+              <CompetitorTable data={filteredCompetitors || []} />
+            )}
+          </Card>
+        </Section>
+      </PageContainer>
+    </>
   );
 }
 
